@@ -4,7 +4,7 @@ Watches the Supreme Court's public docket search
 (https://www.supremecourt.gov/docket/docket.aspx) for a list of search
 terms and emails a report of newly-appearing dockets since the last run.
 
-Runs on a GitHub Actions schedule (every 30 minutes by default) and emails
+Runs on a GitHub Actions schedule (every 15 minutes by default) and emails
 via [Resend](https://resend.com).
 
 ## How it works
@@ -41,8 +41,7 @@ Edit `config/terms.json` — a JSON array of strings:
 
 ```json
 [
-  "must carry",
-  "broadcast license"
+  "Sherrod Brown"
 ]
 ```
 

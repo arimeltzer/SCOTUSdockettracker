@@ -2,10 +2,13 @@ name: SCOTUS Docket Watcher
 
 on:
   schedule:
-    # Every 30 minutes. GitHub Actions cron is best-effort and can run a
-    # few minutes late under load, but this is as close to "immediate"
-    # as a scheduled scrape gets. Adjust the cadence here if you want.
-    - cron: "*/30 * * * *"
+    # Every 15 minutes. GitHub Actions cron is best-effort -- on a public
+    # or busy queue it can slip a few minutes, and GitHub disables a
+    # scheduled workflow automatically after 60 days with no repo activity
+    # (a push or manual workflow_dispatch run re-enables it). There's no
+    # hard rate limit at this cadence, just those two caveats. Adjust the
+    # cadence here if you want.
+    - cron: "*/15 * * * *"
   workflow_dispatch: {}
 
 permissions:
