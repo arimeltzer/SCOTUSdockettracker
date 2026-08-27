@@ -1,0 +1,50 @@
+name: SCOTUS Docket Watcher
+
+on:
+  schedule:
+    # Every 30 minutes. GitHub Actions cron is best-effort and can run a
+    # few minutes late under load, but this is as close to "immediate"
+    # as a scheduled scrape gets. Adjust the cadence here if you want.
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scotus-docket-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run docket watcher
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: python3 scotus_docket_watcher.py
+
+      - name: Commit updated state
+        run: |
+          git config user.name "scotus-docket-watcher-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state/
+          if git diff --cached --quiet; then
+            echo "No state changes to commit."
+          else
+            git commit -m "Update docket watcher state [skip ci]"
+            git push
+          fi
